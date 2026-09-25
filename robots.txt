@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# ChatGPT keresés (citation/idézés) — ezt a botot KELL engedni, ha a ChatGPT
+# találatai közt / hivatkozásaiban meg akarsz jelenni.
+User-agent: OAI-SearchBot
+Allow: /
+
+# Élő ChatGPT-munkamenet, amikor egy felhasználó kérésére azonnal lekéri
+# ezt az oldalt (nem háttér-indexelés).
+User-agent: ChatGPT-User
+Allow: /
+
+# OpenAI modell-tanítási crawler — nem befolyásolja a ChatGPT keresési
+# találatokat, de engedve a szélesebb AI-láthatóság érdekében.
+User-agent: GPTBot
+Allow: /
+
+# Egyéb AI kereső/asszisztens crawlerek.
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://szakiapp.com/sitemap.xml
