@@ -316,7 +316,7 @@
   .hc-search input::placeholder { color: var(--text-faint); }
   .hc-search-btn { flex: none; width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--accent); color: var(--accent-ink); font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s, transform .2s; }
   .hc-search-btn:hover { background: var(--accent-hover); transform: scale(1.05); }
-  .hc-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .hc-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; flex: 1; min-height: 0; }
 
   /* ---------- Telefon-mockup a hero-ban (a felhasználó saját, valódi
      TestFlight-screenshotjai alapján hűen visszaadott dizájn: sötét navy
@@ -359,7 +359,7 @@
   .phone-shell::before, .phone-shell::after { content: ""; position: absolute; background: linear-gradient(90deg, #0a0b0d, #2a2e37); border-radius: 3px 0 0 3px; }
   .phone-shell::before { left: -3px; top: 108px; width: 3px; height: 52px; }
   .phone-shell::after { right: -3px; top: 150px; width: 3px; height: 78px; border-radius: 0 3px 3px 0; background: linear-gradient(270deg, #0a0b0d, #2a2e37); }
-  .phone-screen { position: relative; background: var(--bg); border-radius: 36px; overflow: hidden; padding-bottom: 14px; }
+  .phone-screen { position: relative; background: var(--bg); border-radius: 36px; overflow: hidden; padding-bottom: 14px; display: flex; flex-direction: column; aspect-ratio: 9 / 19; }
   /* Finom üveg-fényvisszaverődés a képernyőn — nem takar el semmit, csak mélységet ad. */
   .phone-screen::after {
     content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 6;
@@ -375,7 +375,7 @@
     padding: 18px 26px 4px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text);
   }
   .phone-statusbar .ph-status-icons { display: flex; align-items: center; gap: 4px; opacity: .85; }
-  .phone-app { padding: 6px 16px 12px; }
+  .phone-app { padding: 6px 16px 12px; flex: 1; display: flex; flex-direction: column; min-height: 0; }
   .ph-search {
     display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--line);
     border-radius: var(--radius-pill); padding: 10px 14px; margin-top: 6px;
