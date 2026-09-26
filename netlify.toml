@@ -15,3 +15,11 @@
   from = "/post/*"
   to = "/.netlify/functions/post/:splat"
   status = 200
+
+# ÚJ (2026-09-27, a Szaki app "Szakember profil megosztása" kérésére): a
+# https://szakiapp.com/pro/{id} profil-megosztó linket a pro.js Function
+# szolgálja ki (lásd netlify/functions/pro.js fejléc-kommentjét).
+[[redirects]]
+  from = "/pro/*"
+  to = "/.netlify/functions/pro/:splat"
+  status = 200

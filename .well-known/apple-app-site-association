@@ -4,7 +4,10 @@
     "details": [
       {
         "appID": "S835AGU6JF.com.szakiapp.szaki",
-        "paths": ["/post/*"]
+        "paths": [
+          "/post/*",
+          "/pro/*"
+        ]
       }
     ]
   }
