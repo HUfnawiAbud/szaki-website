@@ -1,0 +1,17 @@
+# ÚJ (a Szaki app "DISCOVERY POST TELJES MEGOSZTÁSA" kérésére – lásd
+# netlify/functions/post.js fejléc-kommentjét a teljes háttérért): eddig
+# ez egyetlen, statikus index.html fájlból állt, Netlify Function/build
+# lépés nélkül. A Discovery poszt megosztáshoz szükség van egy publikus,
+# POSZTONKÉNT dinamikus Open Graph előnézeti oldalra
+# (https://szakiapp.com/post/{id}) – ez csak szerver-oldalon (Netlify
+# Function) állítható elő, mert egy statikus HTML fájl nem tudná
+# posztonként eltérő <meta property="og:..."> címkékkel válaszolni.
+[build]
+  functions = "netlify/functions"
+
+# A /post/{id} útvonalat a post.js Function szolgálja ki – a `:splat` a
+# `/post/` UTÁNI részt (a poszt-azonosítót) adja tovább a függvénynek.
+[[redirects]]
+  from = "/post/*"
+  to = "/.netlify/functions/post/:splat"
+  status = 200

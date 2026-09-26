@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "S835AGU6JF.com.szakiapp.szaki",
+        "paths": ["/post/*"]
+      }
+    ]
+  }
+}

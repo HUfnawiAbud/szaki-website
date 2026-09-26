@@ -1,0 +1,7 @@
+# ÚJ (a Szaki app Universal Link előkészítéséhez, lásd
+# .well-known/apple-app-site-association kommentjét): ez a fájl
+# kiterjesztés nélküli, Netlify alapból nem "application/json"-ként
+# szolgálná ki (ami miatt Apple elutasítaná a Universal Link
+# ellenőrzést) - itt kényszerítjük a helyes Content-Type-ot.
+/.well-known/apple-app-site-association
+  Content-Type: application/json
