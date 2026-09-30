@@ -5,3 +5,10 @@
 # ellenőrzést) - itt kényszerítjük a helyes Content-Type-ot.
 /.well-known/apple-app-site-association
   Content-Type: application/json
+
+# ÚJ (2026-09-30): Android App Links ellenőrző fájl – a szakiapp.com/pro/…
+# és /post/… linkek Androidon közvetlenül a Szaki appban nyílnak meg.
+# Az ujjlenyomat az EAS feltöltő kulcsáé; a Google Play első feltöltése után
+# a Play "App signing" kulcsának SHA-256 ujjlenyomatát is hozzá kell adni.
+/.well-known/assetlinks.json
+  Content-Type: application/json

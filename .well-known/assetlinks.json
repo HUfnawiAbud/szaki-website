@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.szakiapp.szaki",
+      "sha256_cert_fingerprints": [
+        "E2:1E:57:D3:FB:5A:EB:4C:25:AB:8F:76:E5:AD:B0:0B:87:B2:DC:02:95:E1:7C:09:8D:BA:BD:2D:03:2C:80:45"
+      ]
+    }
+  }
+]
