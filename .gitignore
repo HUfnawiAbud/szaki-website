@@ -1,0 +1,5 @@
+# A régi (éles) verzió helyi másolata, összehasonlításhoz. SOHA nem szabad
+# commitolni: a Netlify minden fájlt kiszolgál, így szakiapp.com/_ELOTTE.html
+# címen nyilvánosan elérhető lenne a weboldal egy korábbi változata.
+# Ha újra kell: git show main:index.html > _ELOTTE.html
+_ELOTTE.html
