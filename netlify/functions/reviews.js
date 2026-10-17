@@ -10,13 +10,15 @@
 // egyetlen bejegyzést sem, akkor ez is üres listát ad, és az oldalon a
 // meglévő, őszinte "még nincs visszajelzés" állapot marad.
 //
-// FONTOS, 2026-10-14-i állapot: az app ekkor MINDKÉT áruházban kint van, de
-// az Apple RSS-e egyik régióban (hu/us/gb/de) sem ad vissza bejegyzést, és a
-// lookup API is 0 értékelést jelez. Az Apple hírcsatornája ismerten késik
-// (akár napokkal) az első értékelések után, illetve régiónként külön épül.
-// Ezért a függvény TÖBB régiót is végigpróbál, és az elsőt veszi, amiben van
-// tartalom — így abban a pillanatban működni fog, amint az Apple publikálja
-// őket, kódmódosítás nélkül.
+// FONTOS, 2026-10-17-i MÉRT állapot: a magyar boltban már van 4 értékelés,
+// 5,0 átlaggal (lookup API: userRatingCount=4, averageUserRating=5), DE az
+// RSS mind a 7 régióban ÜRES marad. Ennek nem hiba az oka: az Apple RSS-e
+// csak a SZÖVEGES véleményeket listázza, a csillag-értékelés szöveg nélkül
+// nem kerül bele. Ezért a függvény kétfélét ad vissza:
+//   - reviews[]: szöveges vélemények, ha vannak (ma nincs),
+//   - summary:   az összesített csillagszám és darabszám, ami VAN.
+// Így az oldal valódi adatot tud mutatni most is, és abban a pillanatban
+// kiírja a szöveges véleményeket is, amint az Apple publikálja őket.
 //
 // Google Play: ott nincs hivatalos, kulcs nélküli nyilvános értékelés-API,
 // ezért a Play-értékeléseket SZÁNDÉKOSAN nem próbáljuk meg "lekaparni" —
@@ -30,6 +32,33 @@ const REGIONS = ["hu", "us", "gb", "de", "at", "sk", "ro"];
 
 const FEED = (cc) =>
   `https://itunes.apple.com/${cc}/rss/customerreviews/id=${APP_ID}/sortBy=mostRecent/json`;
+
+// Az összesített értékelés (átlag + darabszám) NEM az RSS-ben van, hanem a
+// lookup végponton. Ez akkor is ad számot, ha egyetlen vélemény sem szöveges.
+const LOOKUP = (cc) =>
+  `https://itunes.apple.com/lookup?id=${APP_ID}&country=${cc}`;
+
+/** Végigkérdezi a boltokat, és a legtöbb értékelést tartalmazót adja vissza. */
+async function fetchSummary() {
+  let best = null;
+  for (const cc of REGIONS) {
+    try {
+      const res = await fetch(LOOKUP(cc), {
+        headers: { "User-Agent": "szakiapp.com reviews proxy" },
+      });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const app = (json && json.results && json.results[0]) || null;
+      if (!app) continue;
+      const count = parseInt(app.userRatingCount, 10) || 0;
+      const rating = parseFloat(app.averageUserRating) || 0;
+      if (count > 0 && (!best || count > best.count)) {
+        best = { rating: Math.round(rating * 10) / 10, count, region: cc };
+      }
+    } catch (err) { /* egy bolt kiesése nem hiba, megyünk tovább */ }
+  }
+  return best;
+}
 
 function parseFeed(json, cc) {
   const feed = (json && json.feed) || {};
@@ -67,6 +96,10 @@ exports.handler = async function () {
     "Access-Control-Allow-Origin": "*",
   };
 
+  // Az összesítés akkor is kell, ha később találunk szöveges véleményt:
+  // a csillagátlag és a darabszám attól még érdekes a látogatónak.
+  const summary = await fetchSummary();
+
   const tried = [];
   for (const cc of REGIONS) {
     try {
@@ -81,7 +114,7 @@ exports.handler = async function () {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ ok: true, source: "appstore", region: cc, reviews }),
+          body: JSON.stringify({ ok: true, source: "appstore", region: cc, reviews, summary }),
         };
       }
     } catch (err) {
@@ -94,6 +127,6 @@ exports.handler = async function () {
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({ ok: true, source: "appstore", reviews: [], tried }),
+    body: JSON.stringify({ ok: true, source: "appstore", reviews: [], summary, tried }),
   };
 };
