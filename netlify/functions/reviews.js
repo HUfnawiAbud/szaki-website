@@ -20,9 +20,22 @@
 // Így az oldal valódi adatot tud mutatni most is, és abban a pillanatban
 // kiírja a szöveges véleményeket is, amint az Apple publikálja őket.
 //
-// Google Play: ott nincs hivatalos, kulcs nélküli nyilvános értékelés-API,
-// ezért a Play-értékeléseket SZÁNDÉKOSAN nem próbáljuk meg "lekaparni" —
-// az törékeny lenne és a Play feltételeibe is ütközhet.
+// GOOGLE PLAY. Hivatalos, kulcs nélküli értékelés-API ott NINCS: a Play
+// Developer API szolgáltatásfiókot és Play Console-jogosultságot kér. Amit
+// kulcs nélkül, tisztességesen el lehet érni, az a bolti oldal SAJÁT,
+// nyilvánosan közzétett schema.org strukturált adata (ld+json), amiben a
+// Google maga teszi ki az átlagot és a darabszámot a keresőknek. CSAK ezt
+// az összesítést olvassuk ki, a vélemények listáját nem kaparjuk le.
+//
+// Ez törékenyebb, mint egy API: ha a Google átalakítja az oldalt, a
+// kiolvasás elromolhat. Ezért minden hiba NÉMA — ilyenkor egyszerűen nincs
+// Play-adat, és az oldal csak az App Store számát mutatja. Semmit nem
+// találunk ki, és a hiba nem dönti el a többi adatot sem.
+//
+// 2026-10-17-i MÉRT állapot: a Play-listában nincs aggregateRating, vagyis
+// ott még nulla értékelés van. A kiolvasó ettől függetlenül működik
+// (ellenőrizve egy értékelésekkel rendelkező appon), tehát amint az első
+// Play-értékelés megérkezik, magától megjelenik az oldalon.
 
 const APP_ID = "6811597956";
 
@@ -37,6 +50,51 @@ const FEED = (cc) =>
 // lookup végponton. Ez akkor is ad számot, ha egyetlen vélemény sem szöveges.
 const LOOKUP = (cc) =>
   `https://itunes.apple.com/lookup?id=${APP_ID}&country=${cc}`;
+
+const PLAY_ID = "com.szakiapp.szaki";
+const PLAY_URL =
+  `https://play.google.com/store/apps/details?id=${PLAY_ID}&hl=hu&gl=HU`;
+
+/**
+ * A Play-bolt oldalának strukturált adatából (ld+json) olvassa ki az
+ * összesített értékelést. null, ha nincs értékelés vagy bármi elromlik.
+ */
+async function fetchPlaySummary() {
+  try {
+    const res = await fetch(PLAY_URL, {
+      headers: {
+        // A Play a böngésző-azonosító nélküli kéréseknek csökkentett
+        // oldalt ad, amiben nincs benne a strukturált adat.
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36",
+        "Accept-Language": "hu,en;q=0.8",
+      },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const blocks = html.match(
+      /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g
+    );
+    if (!blocks) return null;
+
+    for (const raw of blocks) {
+      const body = raw.replace(/^[^>]*>/, "").replace(/<\/script>$/, "");
+      let data;
+      try { data = JSON.parse(body); } catch (e) { continue; }
+      const ar = data && data.aggregateRating;
+      if (!ar) continue;
+      const count = parseInt(ar.ratingCount, 10) || 0;
+      const rating = parseFloat(ar.ratingValue) || 0;
+      if (count > 0) {
+        return { rating: Math.round(rating * 10) / 10, count };
+      }
+    }
+    return null;
+  } catch (err) {
+    return null;   // néma hiba: ilyenkor egyszerűen nincs Play-adat
+  }
+}
 
 /** Végigkérdezi a boltokat, és a legtöbb értékelést tartalmazót adja vissza. */
 async function fetchSummary() {
@@ -98,7 +156,9 @@ exports.handler = async function () {
 
   // Az összesítés akkor is kell, ha később találunk szöveges véleményt:
   // a csillagátlag és a darabszám attól még érdekes a látogatónak.
-  const summary = await fetchSummary();
+  // A két bolt lekérdezése független, ezért párhuzamosan fut — és a Play
+  // esetleges hibája nem akaszthatja meg az App Store-adatot.
+  const [summary, play] = await Promise.all([fetchSummary(), fetchPlaySummary()]);
 
   const tried = [];
   for (const cc of REGIONS) {
@@ -114,7 +174,7 @@ exports.handler = async function () {
         return {
           statusCode: 200,
           headers,
-          body: JSON.stringify({ ok: true, source: "appstore", region: cc, reviews, summary }),
+          body: JSON.stringify({ ok: true, source: "appstore", region: cc, reviews, summary, play }),
         };
       }
     } catch (err) {
@@ -127,6 +187,6 @@ exports.handler = async function () {
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({ ok: true, source: "appstore", reviews: [], summary, tried }),
+    body: JSON.stringify({ ok: true, source: "appstore", reviews: [], summary, play, tried }),
   };
 };
