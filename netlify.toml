@@ -23,3 +23,28 @@
   from = "/pro/*"
   to = "/.netlify/functions/pro/:splat"
   status = 200
+
+# ÚJ (2026-10-19, a tulajdonos kérésére – "ha ranyomok hogy download ott a
+# weboldalra dob ugye lehet az a bah"): a hirdetések "Letöltés" gombja a
+# /letolt.html oldalra mutat, ami operációs rendszer szerint azonnal az App
+# Store-ba / Google Playre irányít (kampány-tokennel). A /letolt rövid cím is él.
+[[redirects]]
+  from = "/letolt"
+  to = "/letolt.html"
+  status = 200
+
+# ÚJ (2026-10-19): a kód-statisztika oldal (influenszer / partner). Eddig csak az
+# app-repó website/ mappájában volt meg, az élő oldalon nem. A statisztikát a
+# `promoStats` Cloud Function adja (ugyanaz a CLOUD_FUNCTION_BASE, mint a post.js /
+# pro.js függvényekben) – Netlify-on proxyzzuk, hogy a böngésző ugyanarról a
+# domainről hívhassa (`/api/promo-stats?c=KÓD&t=TOKEN`).
+[[redirects]]
+  from = "/kod"
+  to = "/kod.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/promo-stats"
+  to = "https://us-central1-szaki-4d32e.cloudfunctions.net/promoStats"
+  status = 200
+  force = true
