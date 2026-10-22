@@ -1765,6 +1765,7 @@
   /* ---------- Főoldal-átrendezés (2026-10) ---------- */
   .hero-cta-main { min-height: 48px; padding-left: 26px; padding-right: 26px; }
   .hero-links .hero-link-sep { display: none; }
+  a.btn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
   .how-sub { display: block; text-align: center; margin: 0 auto 18px; }
   .how-pro { margin-top: 72px; padding-top: 64px; border-top: 1px solid var(--line); }
   .legal-shell--top { padding-bottom: 8px; }
@@ -4090,15 +4091,27 @@
     if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
     return 'desktop';
   }
+  // JAVÍTVA: a gomb MOSTANTÓL KÖZVETLENÜL az áruház linkjét nyitja meg.
+  // A /go/… átirányításon keresztüli (JS-ből indított) navigációt az iOS
+  // nem mindig adja át az App Store appnak, ezért a koppintás egy valódi
+  // apps.apple.com / play.google.com link, a kattintás számlálása pedig
+  // külön, a háttérben megy a /go/… címre (Netlify naplóban látszik).
   function storeHref(platform) {
-    var onSite = /(^|\.)szakiapp\.com$|\.netlify\.app$/.test(window.location.hostname);
-    if (onSite) return '/go/' + platform;
     return platform === 'ios' ? CONFIG.links.appStoreUrl : CONFIG.links.googlePlayUrl;
+  }
+  function trackStore(platform) {
+    var onSite = /(^|\.)szakiapp\.com$|\.netlify\.app$/.test(window.location.hostname);
+    if (!onSite) return;
+    try {
+      if (navigator.sendBeacon) navigator.sendBeacon('/go/' + platform);
+      else fetch('/go/' + platform, { method: 'POST', keepalive: true, mode: 'no-cors' });
+    } catch (e) { /* a számlálás nem akadályozhatja a letöltést */ }
   }
   function goToStore() {
     var p = detectPlatform();
     if (p === 'desktop') { goToAnchor('letoltes'); return; }
     closeMobileNav();
+    trackStore(p);
     window.location.href = storeHref(p);
   }
   // A QR-kód ne az aktuális oldalt, hanem egy "rögtön az áruházba" linket
@@ -4603,13 +4616,37 @@
   })();
 
   (function storeBadgesDirect() {
-    // A jelvények is a /go/… átirányításon, ugyanabban a lapban nyílnak.
+    // A jelvények közvetlen áruház-linkek, ugyanabban a lapban nyílnak,
+    // a kattintást a háttérben számoljuk.
     [['appStoreBadge', 'ios'], ['footerAppStoreBadge', 'ios'], ['playBadge', 'android'], ['footerPlayBadge', 'android']].forEach(function (pair) {
       var el = document.getElementById(pair[0]);
-      if (el && el.tagName === 'A') { el.href = storeHref(pair[1]); el.removeAttribute('target'); }
+      if (el && el.tagName === 'A') {
+        el.href = storeHref(pair[1]);
+        el.removeAttribute('target');
+        el.addEventListener('click', function () { trackStore(pair[1]); });
+      }
     });
     var p = detectPlatform();
     if (p !== 'desktop') {
+      // Telefonon minden "Alkalmazás letöltése" gomb VALÓDI linkké válik
+      // (<a href="https://apps.apple.com/…">): a koppintásra így az iOS és
+      // az Android is biztosan az áruház appot nyitja meg.
+      document.querySelectorAll('[onclick*="goToStore()"]').forEach(function (el) {
+        var a = el;
+        if (el.tagName !== 'A') {
+          a = document.createElement('a');
+          for (var i = 0; i < el.attributes.length; i++) {
+            var at = el.attributes[i];
+            if (at.name !== 'onclick' && at.name !== 'type') a.setAttribute(at.name, at.value);
+          }
+          a.innerHTML = el.innerHTML;
+          el.replaceWith(a);
+        }
+        a.removeAttribute('onclick');
+        a.removeAttribute('target');
+        a.href = storeHref(p);
+        a.addEventListener('click', function () { trackStore(p); });
+      });
       // Telefonon csak a saját áruháza látszik, a QR-kód pedig felesleges.
       var other = document.getElementById(p === 'ios' ? 'playBadge' : 'appStoreBadge');
       if (other) other.hidden = true;
@@ -4618,6 +4655,7 @@
       // QR-kódból érkezett (?app=1): rögtön az áruházba.
       if (/[?&]app=1(&|$)/.test(window.location.search)) {
         try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+        trackStore(p);
         window.location.href = storeHref(p);
       }
     }
