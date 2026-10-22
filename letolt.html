@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Szaki letöltése</title>
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+  /* ÚJ (2026-10-19): hirdetési "közvetlen letöltés" átirányító oldal.
+     Felhasználói kérés (szó szerint): "Lehet az a baj a weboldalra irányít nem pedig egybol letöltésre
+     de ha nem akkor szólj" / "Ha ranyomok hogy download ott a weboldalra dob ugye lehet az a bah".
+     GYÖKÉROK: a Meta-hirdetések "Download" gombja eddig a szakiapp.com főoldalra vitt (ügyfél-központú hero,
+     plusz egy extra kattintás a store-badge-ig) — ezért volt 169 oldalmegtekintés mellett 0 letöltés.
+     Ez az oldal a hirdetés célURL-je: a böngésző operációs rendszere alapján azonnal a megfelelő áruházi
+     oldalra dob (iOS → App Store, Android → Google Play), kampány-tokennel, hogy az áruházi statisztikában
+     látszódjon, melyik hirdetésből jött a letöltés. Asztali gépen (vagy ha az átirányítás elakad) a két
+     áruházi gomb látszik. NINCS süti, NINCS követő script, NINCS külső kérés — az adatvédelmi tájékoztatóval
+     ("klasszikus webes sütiket nem használ") ez összhangban marad. Az index.html-hez NEM nyúl. */
+  :root { --bg:#0A0E14; --surface:#121922; --line:rgba(255,255,255,0.08); --text:#F2F6F9; --soft:#A7B3BF; --faint:#6E7A87; --accent:#B2D5E5; --accent-ink:#0A0E14;
+    --display:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased;
+    display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  main { width:100%; max-width:420px; text-align:center; }
+  .logo { width:84px; height:84px; border-radius:22px; display:block; margin:0 auto 20px; box-shadow:0 18px 50px rgba(0,0,0,.45); }
+  h1 { font-family:var(--display); font-weight:800; font-size:30px; line-height:1.15; margin:0 0 8px; letter-spacing:-.01em; }
+  p { color:var(--soft); margin:0 0 26px; font-size:16px; line-height:1.5; }
+  .btns { display:flex; flex-direction:column; gap:12px; }
+  a.btn { display:flex; align-items:center; justify-content:center; gap:10px; min-height:56px; padding:0 20px; border-radius:16px; text-decoration:none;
+    font-weight:700; font-size:17px; border:1px solid var(--line); background:var(--surface); color:var(--text); }
+  a.btn.primary { background:var(--accent); color:var(--accent-ink); border-color:transparent; }
+  a.btn svg { width:22px; height:22px; flex:none; }
+  .note { margin-top:22px; font-size:13px; color:var(--faint); }
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="/apple-touch-icon.png" alt="Szaki">
+  <h1 id="t1">Szaki letöltése</h1>
+  <p id="t2">Átirányítunk az áruházba…</p>
+  <div class="btns">
+    <a class="btn" id="btnIos" href="https://apps.apple.com/hu/app/szaki/id6811597956">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7.5 11l4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>
+      <span id="lIos">Letöltés az App Store-ból</span>
+    </a>
+    <a class="btn" id="btnAnd" href="https://play.google.com/store/apps/details?id=com.szakiapp.szaki">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7.5 11l4.5 4.5 4.5-4.5"/><path d="M5 20h14"/></svg>
+      <span id="lAnd">Letöltés a Google Playről</span>
+    </a>
+  </div>
+  <div class="note" id="t3"></div>
+  <noscript><div class="note">A fenti gombok JavaScript nélkül is működnek.</div></noscript>
+</main>
+<script>
+(function () {
+  // A tulajdonos tölti ki (App Store Connect → App Analytics → Campaigns → "Create campaign link" → a link
+  // "pt=" értéke). Üresen hagyva az áruházi link csak a "ct" kampány-tokent kapja, a "pt" nélkül az Apple
+  // az App Analytics-ben nem feltétlenül köti a letöltést a kampányhoz — ezért érdemes kitölteni.
+  var APPLE_PROVIDER_TOKEN = "";
+
+  var IOS_URL = "https://apps.apple.com/hu/app/szaki/id6811597956";
+  var PLAY_URL = "https://play.google.com/store/apps/details?id=com.szakiapp.szaki";
+
+  var TXT = {
+    hu: { t1: "Szaki letöltése", redir: "Átirányítunk az áruházba…", pick: "Válaszd ki az áruházat:", ios: "Letöltés az App Store-ból", and: "Letöltés a Google Playről", desk: "Nyisd meg ezt az oldalt a telefonodon, vagy válaszd ki az áruházat." },
+    en: { t1: "Get Szaki", redir: "Taking you to the store…", pick: "Choose your store:", ios: "Download on the App Store", and: "Get it on Google Play", desk: "Open this page on your phone, or pick your store." },
+    de: { t1: "Szaki laden", redir: "Weiterleitung zum Store…", pick: "Wähle deinen Store:", ios: "Im App Store laden", and: "Bei Google Play laden", desk: "Öffne diese Seite auf deinem Handy oder wähle deinen Store." }
+  };
+  var lang = ((navigator.language || "hu").slice(0, 2)).toLowerCase();
+  var T = TXT[lang] || TXT.hu;
+
+  function $(id) { return document.getElementById(id); }
+  function q(name) {
+    try { return new URLSearchParams(location.search).get(name) || ""; } catch (e) { return ""; }
+  }
+
+  // Kampány-token: csak ASCII betű/szám/_/-, ékezet nélkül, max 40 karakter (az Apple "ct" és a Play
+  // "referrer" is így biztonságos). A Meta dinamikus {{campaign.name}} értéke szóközöket, ékezeteket és
+  // írásjeleket is tartalmazhat ("Szaki - letöltés - 2026-10.") — ezeket itt tisztítjuk.
+  var rawCampaign = q("utm_campaign") || q("ct") || "meta";
+  var campaign = rawCampaign.normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^A-Za-z0-9_-]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40) || "meta";
+  var source = (q("utm_source") || "meta").replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 20) || "meta";
+
+  var iosUrl = IOS_URL + "?ct=" + encodeURIComponent(campaign) + "&mt=8" +
+    (APPLE_PROVIDER_TOKEN ? "&pt=" + encodeURIComponent(APPLE_PROVIDER_TOKEN) : "");
+  // A Play "referrer" paraméter értéke maga is egy kódolt query-string (utm_source=…&utm_campaign=…),
+  // ezt a Play Console "Acquisition" jelentése és az Install Referrer API olvassa vissza.
+  var playUrl = PLAY_URL + "&referrer=" + encodeURIComponent("utm_source=" + source + "&utm_medium=paid&utm_campaign=" + campaign);
+
+  $("btnIos").href = iosUrl;
+  $("btnAnd").href = playUrl;
+  $("t1").textContent = T.t1;
+  $("lIos").textContent = T.ios;
+  $("lAnd").textContent = T.and;
+
+  // Operációs rendszer: a ?os= paraméter csak tesztelésre való (pl. /letolt?os=android).
+  var ua = navigator.userAgent || "";
+  var os = q("os");
+  if (os !== "ios" && os !== "android") {
+    var iPadOS = /Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1; // iPadOS "asztali" UA-val jelentkezik
+    if (/iPhone|iPad|iPod/.test(ua) || iPadOS) os = "ios";
+    else if (/Android/.test(ua)) os = "android";
+    else os = "desktop";
+  }
+
+  if (os === "ios") {
+    $("t2").textContent = T.redir;
+    $("btnIos").className = "btn primary";
+    $("btnAnd").style.display = "none";
+    location.replace(iosUrl);
+  } else if (os === "android") {
+    $("t2").textContent = T.redir;
+    $("btnAnd").className = "btn primary";
+    $("btnIos").style.display = "none";
+    location.replace(playUrl);
+  } else {
+    // Asztali gép: nincs mit automatikusan megnyitni, mindkét áruház látszik.
+    $("t2").textContent = T.pick;
+    $("t3").textContent = T.desk;
+  }
+})();
+</script>
+</body>
+</html>
