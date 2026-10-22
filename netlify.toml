@@ -64,3 +64,24 @@
   to = "https://us-central1-szaki-4d32e.cloudfunctions.net/promoStats"
   status = 200
   force = true
+
+# ÚJ (2026-10-22): a nyomtatott QR-kódok (szórólap, matrica) a
+# https://szakiapp.com/letoltes címre mutatnak – ez is a /letolt.html
+# operációsrendszer-felismerő áruház-átirányító oldalt szolgálja ki.
+[[redirects]]
+  from = "/letoltes"
+  to = "/letolt.html"
+  status = 200
+
+# ÚJ (2026-10-22): a szerződésekben (pl. influenszer-megállapodás 7.1) szereplő
+# szakiapp.com/adatvedelem és szakiapp.com/aszf rövid címek. Az index.html
+# az útvonalból nyitja meg a megfelelő nézetet (initialRoute).
+[[redirects]]
+  from = "/adatvedelem"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/aszf"
+  to = "/index.html"
+  status = 200

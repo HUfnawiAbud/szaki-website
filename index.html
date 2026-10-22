@@ -4664,6 +4664,12 @@
   (function initialRoute() {
     var hash = (window.location.hash || '').replace('#', '');
     var known = ['kezdolap', 'aszf', 'adatvedelem', 'kereses', 'funkciok', 'kapcsolat', 'szakmak', 'arak', 'segitseg'];
+    // Rövid címek (pl. szakiapp.com/adatvedelem a szerződésekben): a netlify.toml
+    // ezeket az index.html-re irányítja, itt pedig az útvonalból nyitjuk a nézetet.
+    if (!hash) {
+      var path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+      if (known.indexOf(path) !== -1) hash = path;
+    }
     if (known.indexOf(hash) !== -1) showView(hash);
     else showView('kezdolap');
   })();
