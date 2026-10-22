@@ -9,6 +9,22 @@
 [build]
   functions = "netlify/functions"
 
+# ÚJ (2026-10, főoldal-átrendezés): az "Alkalmazás letöltése" gombok ezen a
+# két rövid linken át mennek az áruházba. Így a Netlify Observability
+# naplójában (302-es /go/ios és /go/android sorok) megszámolható, hányan
+# kattintottak a letöltésre, süti és követőkód nélkül.
+[[redirects]]
+  from = "/go/ios"
+  to = "https://apps.apple.com/app/id6811597956"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/go/android"
+  to = "https://play.google.com/store/apps/details?id=com.szakiapp.szaki"
+  status = 302
+  force = true
+
 # A /post/{id} útvonalat a post.js Function szolgálja ki – a `:splat` a
 # `/post/` UTÁNI részt (a poszt-azonosítót) adja tovább a függvénynek.
 [[redirects]]

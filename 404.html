@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Az oldal nem található – Szaki</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#070B11; --surface:#141C28; --line:rgba(255,255,255,0.09); --text:#EEF3F8; --soft:#9AA8B8; --accent:#B2D5E5; --accent-ink:#061018; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px;
+         background: radial-gradient(900px 500px at 50% -10%, rgba(178,213,229,0.10), transparent 60%), var(--bg);
+         color:var(--text); font-family:Inter, system-ui, -apple-system, sans-serif; text-align:center; }
+  main { max-width:520px; }
+  .code { font-family:"Plus Jakarta Sans", Inter, sans-serif; font-weight:800; font-size:clamp(72px, 18vw, 120px); line-height:1; letter-spacing:-0.04em; color:var(--accent); }
+  h1 { font-family:"Plus Jakarta Sans", Inter, sans-serif; font-size:clamp(22px, 5vw, 28px); margin:18px 0 10px; text-wrap:balance; }
+  p { color:var(--soft); line-height:1.6; margin:0 0 28px; }
+  .row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  a { display:inline-flex; align-items:center; min-height:46px; padding:0 22px; border-radius:999px; font-weight:600; text-decoration:none; }
+  a.primary { background:var(--accent); color:var(--accent-ink); }
+  a.ghost { border:1px solid var(--line); color:var(--text); background:var(--surface); }
+  a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="code">404</div>
+  <h1>Ezt az oldalt nem találjuk</h1>
+  <p>Lehet, hogy elírás van a címben, vagy az oldal már nem létezik. A szakembered viszont megvan, csak a főoldalon kell keresni.</p>
+  <div class="row">
+    <a class="primary" href="/">Vissza a főoldalra</a>
+    <a class="ghost" href="/#szakmak">Szakmák</a>
+  </div>
+</main>
+</body>
+</html>
