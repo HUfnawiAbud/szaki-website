@@ -12,3 +12,20 @@
 # a Play "App signing" kulcsának SHA-256 ujjlenyomatát is hozzá kell adni.
 /.well-known/assetlinks.json
   Content-Type: application/json
+
+# ÚJ (2026-10-22, indulás előtti ellenőrzőlista): biztonsági fejlécek minden
+# oldalra. HTTPS-t a Netlify eddig is kényszerített (http -> https átirányítás);
+# a HSTS ezt a böngészőben is rögzíti. Szándékosan nincs X-Frame-Options / CSP:
+# az oldalt előnézetek és beágyazások is megjelenítik, azt nem akarjuk eltörni.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+# Saját tárhelyre költöztetett betűtípusok és programkönyvtárak: a fájlnevek
+# verziózottak / nem változnak, a böngésző sokáig gyorsítótárazhatja őket.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/vendor/*
+  Cache-Control: public, max-age=2592000

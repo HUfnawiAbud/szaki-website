@@ -9,6 +9,22 @@
 [build]
   functions = "netlify/functions"
 
+# ÚJ (2026-10, főoldal-átrendezés): az "Alkalmazás letöltése" gombok ezen a
+# két rövid linken át mennek az áruházba. Így a Netlify Observability
+# naplójában (302-es /go/ios és /go/android sorok) megszámolható, hányan
+# kattintottak a letöltésre, süti és követőkód nélkül.
+[[redirects]]
+  from = "/go/ios"
+  to = "https://apps.apple.com/app/id6811597956"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/go/android"
+  to = "https://play.google.com/store/apps/details?id=com.szakiapp.szaki"
+  status = 302
+  force = true
+
 # A /post/{id} útvonalat a post.js Function szolgálja ki – a `:splat` a
 # `/post/` UTÁNI részt (a poszt-azonosítót) adja tovább a függvénynek.
 [[redirects]]
@@ -48,3 +64,24 @@
   to = "https://us-central1-szaki-4d32e.cloudfunctions.net/promoStats"
   status = 200
   force = true
+
+# ÚJ (2026-10-22): a nyomtatott QR-kódok (szórólap, matrica) a
+# https://szakiapp.com/letoltes címre mutatnak – ez is a /letolt.html
+# operációsrendszer-felismerő áruház-átirányító oldalt szolgálja ki.
+[[redirects]]
+  from = "/letoltes"
+  to = "/letolt.html"
+  status = 200
+
+# ÚJ (2026-10-22): a szerződésekben (pl. influenszer-megállapodás 7.1) szereplő
+# szakiapp.com/adatvedelem és szakiapp.com/aszf rövid címek. Az index.html
+# az útvonalból nyitja meg a megfelelő nézetet (initialRoute).
+[[redirects]]
+  from = "/adatvedelem"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/aszf"
+  to = "/index.html"
+  status = 200

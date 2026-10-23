@@ -3,6 +3,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://szakiapp.com/</loc>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -11,12 +12,13 @@
     </image:image>
   </url>
   <url>
-    <loc>https://szakiapp.com/#aszf</loc>
+    <loc>https://szakiapp.com/aszf</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://szakiapp.com/#adatvedelem</loc>
+    <loc>https://szakiapp.com/adatvedelem</loc>
+    <lastmod>2026-10-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
