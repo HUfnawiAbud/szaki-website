@@ -85,7 +85,7 @@
     h += '<p class="eyebrow">Kódstatisztika' + (d.ownerName ? " · " + esc(d.ownerName) : "") + "</p>";
     h += "<h1>" + esc(d.code) + "</h1>";
     h += '<p class="sub">' + (d.freeUntil ? "Ingyenes Szaki a kóddal eddig: " + esc(new Date(d.freeUntil).toLocaleDateString("hu-HU")) : d.freeTrialDays ? esc(d.freeTrialDays) + " nap ingyenes Szaki a kóddal" : "Szaki kampánykód") +
-      (inf ? " · jutalom: az első havi fizetés " + esc(d.rewardPercent) + "%-a" : "") + (d.active ? "" : " · a kód már nem aktív") + "</p>";
+      (inf ? (d.rewardMaxPaidEvents ? " · jutalom: az első " + esc(d.rewardMaxPaidEvents) + " sikeres fizetés " + esc(d.rewardPercent) + "%-a" : " · jutalom: az első havi fizetés " + esc(d.rewardPercent) + "%-a") : "") + (d.active ? "" : " · a kód már nem aktív") + "</p>";
     h += '<div class="grid">';
     h += '<div class="tile hero"><div class="label">Sikeres (fizetett)</div><div class="value">' + (T.successful || 0) + "</div></div>";
     h += '<div class="tile"><div class="label">Beváltások összesen</div><div class="value">' + (T.redemptions || 0) + "</div></div>";
@@ -100,12 +100,14 @@
     if (!d.rows || !d.rows.length) {
       h += '<div class="msg">Még senki nem váltotta be a kódot.</div>';
     } else {
-      h += '<div class="table-wrap"><table><thead><tr><th>Beváltva</th><th>Eszköz</th><th>Állapot</th><th>Első fizetés</th>' +
+      h += '<div class="table-wrap"><table><thead><tr><th>Beváltva</th><th>Eszköz</th><th>Állapot</th><th>Első fizetés</th>' + (d.rewardMaxPaidEvents ? "<th>Fizetések</th>" : "") +
         (inf ? '<th class="num">Jutalom</th><th>Kifizetés</th>' : "") + "</tr></thead><tbody>";
       d.rows.forEach(function (r) {
         var st = STATUS[r.status] || STATUS.trial;
         h += "<tr><td>" + esc(r.date) + "</td><td>" + esc(r.platform) + '</td><td><span class="pill ' + st[0] + '">' + st[1] + "</span></td>";
         h += "<td>" + (r.firstPaid != null ? esc(r.convertedDate || "") + " · " + money(r.firstPaid, r.currency) : "–") + "</td>";
+        // ÚJ (2026-10-23): a jutalék az első 3 sikeres fizetésre jár – hányadiknál tart.
+        if (d.rewardMaxPaidEvents) h += "<td>" + (r.paidEvents != null ? esc(r.paidEvents) + " / " + esc(r.maxPaidEvents || d.rewardMaxPaidEvents) : "–") + "</td>";
         if (inf) {
           h += '<td class="num">' + (r.reward ? money(r.reward, r.currency) : "–") + "</td>";
           h += "<td>" + (r.payout === "paid" ? '<span class="pill p-paid">Kifizetve</span>' : r.payout === "pending" ? '<span class="pill p-pend">Függőben</span>' : "–") + "</td>";
