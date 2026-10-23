@@ -4127,7 +4127,19 @@
   }
   function goToStore() {
     var p = detectPlatform();
-    if (p === 'desktop') { goToAnchor('letoltes'); return; }
+    if (p === 'desktop') {
+      // Gépen is egyből áruház (kérés: "egybol az adott aruhazba dobjon"):
+      // Macen az App Store, más gépen a Google Play webes oldala nyílik új
+      // lapon. A QR-kód a Letöltés szekcióban továbbra is megvan.
+      var d = /Mac OS X|Macintosh/.test(navigator.userAgent || '') ? 'ios' : 'android';
+      trackStore(d);
+      // (A 'noopener' jelző mellett a window.open mindig null-t adna, ezért
+      // utólag vágjuk el az opener-kapcsolatot.)
+      var w = window.open(storeHref(d), '_blank');
+      if (w) { try { w.opener = null; } catch (e) {} }
+      else window.location.href = storeHref(d);
+      return;
+    }
     closeMobileNav();
     trackStore(p);
     window.location.href = storeHref(p);
