@@ -162,6 +162,7 @@ function renderPage({ title, description, ogImage, canonicalUrl, bodyHtml }) {
     ${bodyHtml}
   </div>
   <!-- Cloudflare Web Analytics (süti nélküli látogatottságmérés) --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "665415fab48f43a3940eb21901627fba"}'></script><!-- End Cloudflare Web Analytics -->
+  <script src="/consent.js" defer></script>
 </body>
 </html>`;
 }
