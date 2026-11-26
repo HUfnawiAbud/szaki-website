@@ -21,30 +21,9 @@
   var MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
 
   var TEXT = {
-    hu: {
-      title: 'Sütik a weboldalon',
-      body: 'A látogatottságot alapból süti nélkül, névtelenül mérjük. Ha elfogadod, a Google Analytics sütiket is használunk, hogy lássuk, melyik oldal és hirdetés működik. Bármikor módosíthatod a láblécben.',
-      accept: 'Elfogadom',
-      reject: 'Elutasítom',
-      more: 'Adatvédelmi tájékoztató',
-      settings: 'Sütibeállítások'
-    },
-    en: {
-      title: 'Cookies on this website',
-      body: 'By default we measure visits anonymously, without cookies. If you accept, we also use Google Analytics cookies to see which pages and ads work. You can change this any time in the footer.',
-      accept: 'Accept',
-      reject: 'Decline',
-      more: 'Privacy Policy',
-      settings: 'Cookie settings'
-    },
-    de: {
-      title: 'Cookies auf dieser Website',
-      body: 'Standardmäßig messen wir Besuche anonym und ohne Cookies. Wenn du zustimmst, verwenden wir zusätzlich Cookies von Google Analytics, um zu sehen, welche Seiten und Anzeigen funktionieren. Du kannst dies jederzeit in der Fußzeile ändern.',
-      accept: 'Akzeptieren',
-      reject: 'Ablehnen',
-      more: 'Datenschutzerklärung',
-      settings: 'Cookie-Einstellungen'
-    }
+    hu: { pre: 'Ez az oldal sütiket használ. Részletek az ', link: 'adatvédelmi tájékoztatóban', post: '.', accept: 'Elfogadom', reject: 'Elutasítom', settings: 'Sütibeállítások', aria: 'Sütik' },
+    en: { pre: 'This website uses cookies. Details in our ', link: 'Privacy Policy', post: '.', accept: 'Accept', reject: 'Decline', settings: 'Cookie settings', aria: 'Cookies' },
+    de: { pre: 'Diese Website verwendet Cookies. Details in der ', link: 'Datenschutzerklärung', post: '.', accept: 'Akzeptieren', reject: 'Ablehnen', settings: 'Cookie-Einstellungen', aria: 'Cookies' }
   };
 
   function lang() {
@@ -112,17 +91,29 @@
     var st = document.createElement('style');
     st.id = 'szaki-consent-css';
     st.textContent =
-      '#szaki-consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483000;max-width:560px;margin:0 auto;' +
-      'background:#14171f;color:#f4f6fb;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.35);padding:18px 18px 16px;' +
-      'font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}' +
-      '#szaki-consent h2{font-size:15px;margin:0 0 6px;font-weight:600;color:#fff}' +
-      '#szaki-consent p{margin:0 0 12px;color:#c9cedb}' +
-      '#szaki-consent a{color:#9db6ff;text-decoration:underline}' +
-      '#szaki-consent .sc-row{display:flex;gap:10px;flex-wrap:wrap}' +
-      '#szaki-consent button{flex:1 1 140px;min-height:42px;border-radius:10px;font:600 14px/1 inherit;cursor:pointer;border:1px solid #3a4152}' +
-      '#szaki-consent .sc-accept{background:#2457e0;border-color:#2457e0;color:#fff}' +
-      '#szaki-consent .sc-reject{background:#232835;color:#f4f6fb}' +
-      '#szaki-consent button:focus-visible{outline:2px solid #9db6ff;outline-offset:2px}';
+      '#szaki-consent{position:fixed;z-index:2147483000;left:12px;right:12px;bottom:12px;' +
+      'display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 14px 14px 18px;' +
+      'background:rgba(13,19,29,.86);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);' +
+      'border:1px solid rgba(178,213,229,.16);border-radius:18px;color:#F4F8FB;' +
+      'box-shadow:0 18px 48px -12px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.2);' +
+      'font:500 14px/1.45 var(--font-body,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);' +
+      'animation:sc-in .42s cubic-bezier(.23,1,.32,1) both}' +
+      '@media (min-width:640px){#szaki-consent{left:20px;right:auto;bottom:20px;max-width:440px}}' +
+      '@keyframes sc-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}' +
+      '@media (prefers-reduced-motion:reduce){#szaki-consent{animation:none}}' +
+      '#szaki-consent .sc-ico{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;' +
+      'background:rgba(79,168,255,.14);color:#9ECFE8}' +
+      '#szaki-consent .sc-txt{flex:1 1 220px;margin:0;color:#AEBAC7}' +
+      '#szaki-consent .sc-txt a{color:#CDE6F2;text-decoration:underline;text-underline-offset:2px;text-decoration-color:rgba(205,230,242,.45)}' +
+      '#szaki-consent .sc-row{display:flex;gap:8px;flex:1 1 100%;justify-content:flex-end}' +
+      '#szaki-consent button{flex:1 1 0;max-width:200px;min-height:40px;padding:0 18px;border-radius:999px;cursor:pointer;' +
+      'font:700 14px/1 inherit;letter-spacing:.01em;transition:transform .14s cubic-bezier(.23,1,.32,1),filter .14s,background .14s}' +
+      '#szaki-consent button:active{transform:scale(.97)}' +
+      '#szaki-consent .sc-accept{border:0;color:#061018;background:linear-gradient(135deg,#CDE6F2 0%,#9ECFE8 48%,#63B4FA 100%);' +
+      'box-shadow:0 8px 22px -10px rgba(79,168,255,.6),inset 0 1px 0 rgba(255,255,255,.35)}' +
+      '#szaki-consent .sc-reject{background:rgba(255,255,255,.04);color:#F4F8FB;border:1px solid rgba(255,255,255,.14)}' +
+      '@media (hover:hover){#szaki-consent .sc-accept:hover{filter:brightness(1.06)}#szaki-consent .sc-reject:hover{background:rgba(255,255,255,.09)}}' +
+      '#szaki-consent button:focus-visible,#szaki-consent a:focus-visible{outline:2px solid #4FA8FF;outline-offset:2px}';
     document.head.appendChild(st);
   }
   function privacyHref() { return '/adatvedelem'; }
@@ -134,14 +125,16 @@
     bar.id = 'szaki-consent';
     bar.setAttribute('role', 'dialog');
     bar.setAttribute('aria-live', 'polite');
-    bar.setAttribute('aria-label', t('title'));
+    bar.setAttribute('aria-label', t('aria'));
     bar.innerHTML =
-      '<h2></h2><p><span class="sc-body"></span> <a class="sc-more"></a></p>' +
+      '<span class="sc-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M21 12.5A9 9 0 1 1 11.5 3a3 3 0 0 0 3.5 3.5 3 3 0 0 0 3.5 3.5 3 3 0 0 0 2.5 2.5z"/><circle cx="8.5" cy="10.5" r="1"/><circle cx="13" cy="15.5" r="1"/><circle cx="8" cy="15" r=".6"/></svg></span>' +
+      '<p class="sc-txt"><span class="sc-pre"></span><a class="sc-more"></a><span class="sc-post"></span></p>' +
       '<div class="sc-row"><button type="button" class="sc-reject"></button><button type="button" class="sc-accept"></button></div>';
-    bar.querySelector('h2').textContent = t('title');
-    bar.querySelector('.sc-body').textContent = t('body');
+    bar.querySelector('.sc-pre').textContent = t('pre');
+    bar.querySelector('.sc-post').textContent = t('post');
     var more = bar.querySelector('.sc-more');
-    more.textContent = t('more');
+    more.textContent = t('link');
     more.href = privacyHref();
     bar.querySelector('.sc-accept').textContent = t('accept');
     bar.querySelector('.sc-reject').textContent = t('reject');

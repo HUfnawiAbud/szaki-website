@@ -4679,9 +4679,8 @@
         a.href = storeHref(p);
         a.addEventListener('click', function () { trackStore(p); });
       });
-      // Telefonon csak a saját áruháza látszik, a QR-kód pedig felesleges.
-      var other = document.getElementById(p === 'ios' ? 'playBadge' : 'appStoreBadge');
-      if (other) other.hidden = true;
+      // Telefonon is mindkét áruház jelvénye látszik (a tulajdonos kérése);
+      // a QR-kód viszont felesleges.
       var qr = document.getElementById('qrBox');
       if (qr) qr.hidden = true;
       // QR-kódból érkezett (?app=1): rögtön az áruházba.
